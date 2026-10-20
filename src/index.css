@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: 'Playfair Display', Georgia, Cambria, serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  
+  --color-kafa-bg: #F7F3EC;
+  --color-kafa-text: #241E1A;
+  --color-kafa-muted: #756B63;
+  --color-kafa-caramel: #B86B3D;
+  --color-kafa-caramel-hover: #A05A30;
+  --color-kafa-surface: #E7D8C7;
+  --color-kafa-surface-light: #F0E6D8;
+  --color-kafa-card: #FFFFFF;
+  --color-kafa-border: #E5DCD1;
+  --color-kafa-veg: #2E7D32;
+}
+
+/* Custom Scrollbar Hiding */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Glass & Soft Shadow Effects */
+.kafa-shadow-sm {
+  box-shadow: 0 2px 10px rgba(36, 30, 26, 0.04);
+}
+
+.kafa-shadow-md {
+  box-shadow: 0 8px 24px rgba(36, 30, 26, 0.07);
+}
+
+.kafa-shadow-lg {
+  box-shadow: 0 16px 40px rgba(36, 30, 26, 0.12);
+}
+
+/* Smooth modal animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.animate-modal-in {
+  animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
