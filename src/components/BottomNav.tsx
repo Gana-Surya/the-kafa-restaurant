@@ -1,22 +1,34 @@
 import React from 'react';
-import { useCart } from '../context/CartContext';
-import { Coffee, ShoppingBag, MoreHorizontal } from 'lucide-react';
+import { useCart, type AppTab } from '../context/CartContext';
+import { Coffee, ShoppingBag, MoreHorizontal, Clock, ChefHat } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface NavItem {
-  id: 'home' | 'menu' | 'order' | 'profile';
+  id: AppTab;
   label: string;
   icon: LucideIcon;
   badge?: number;
+  pulse?: boolean;
 }
 
 export const BottomNav: React.FC = () => {
-  const { activeTab, setActiveTab, totalItemsCount } = useCart();
+  const { activeTab, setActiveTab, totalItemsCount, activeOrder } = useCart();
 
   const navItems: NavItem[] = [
     { id: 'menu', label: 'Menu', icon: Coffee },
-    { id: 'order', label: 'Order', icon: ShoppingBag, badge: totalItemsCount },
-    { id: 'profile', label: 'More', icon: MoreHorizontal },
+    { id: 'order', label: 'Tray', icon: ShoppingBag, badge: totalItemsCount },
+    ...(activeOrder && activeOrder.status !== 'completed'
+      ? [
+          {
+            id: 'tracking' as AppTab,
+            label: 'Track',
+            icon: Clock,
+            pulse: true
+          }
+        ]
+      : []),
+    { id: 'kitchen' as AppTab, label: 'Kitchen', icon: ChefHat },
+    { id: 'profile', label: 'More', icon: MoreHorizontal }
   ];
 
   return (
@@ -42,6 +54,9 @@ export const BottomNav: React.FC = () => {
                     {item.badge}
                   </span>
                 ) : null}
+                {item.pulse && (
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full animate-ping" />
+                )}
               </div>
               <span className="text-[11px] mt-1 tracking-tight">
                 {item.label}

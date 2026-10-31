@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
-import { X, Trash2, Plus, Minus, Coffee, CheckCircle } from 'lucide-react';
+import { X, Trash2, Plus, Minus, Coffee, ArrowRight } from 'lucide-react';
 
 interface OrderSummaryProps {
   isDrawer?: boolean;
@@ -12,12 +12,9 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ isDrawer = false }) 
     updateQuantity,
     removeFromCart,
     subtotal,
-    tableNumber,
     isCartOpen,
     setIsCartOpen,
-    placeOrder,
-    orderPlaced,
-    resetOrderPlaced,
+    setIsCheckoutOpen,
     setActiveTab
   } = useCart();
 
@@ -26,6 +23,10 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ isDrawer = false }) 
   const handleBackToMenu = () => {
     if (isDrawer) setIsCartOpen(false);
     setActiveTab('menu');
+  };
+
+  const handleProceedToCheckout = () => {
+    setIsCheckoutOpen(true);
   };
 
   const containerClasses = isDrawer
@@ -39,7 +40,6 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ isDrawer = false }) 
   return (
     <div className={isDrawer ? containerClasses : ''} onClick={() => isDrawer && setIsCartOpen(false)}>
       <div className={contentClasses} onClick={(e) => isDrawer && e.stopPropagation()}>
-        
         {/* Top Header */}
         <div className="relative flex items-center justify-center pb-4 border-b border-[#E5DCD1]">
           {isDrawer && (
@@ -51,7 +51,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ isDrawer = false }) 
             </button>
           )}
           <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#241E1A] text-center">
-            Your Order
+            Your Order Tray
           </h2>
         </div>
 
@@ -160,43 +160,15 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ isDrawer = false }) 
             </div>
 
             <button
-              onClick={placeOrder}
-              className="w-full py-4 bg-[#B86B3D] text-white rounded-2xl font-bold text-sm hover:bg-[#A05A30] active:scale-[0.99] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+              onClick={handleProceedToCheckout}
+              className="w-full py-4 bg-[#B86B3D] hover:bg-[#A05A30] text-white rounded-2xl font-bold text-sm active:scale-[0.99] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>Send Order to Barista — ₹{subtotal}</span>
+              <span>Proceed to Delivery & WhatsApp Dispatch</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         )}
-
       </div>
-
-      {/* Order Placed Success Modal */}
-      {orderPlaced && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
-          <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl border border-[#E5DCD1] animate-modal-in">
-            <div className="w-16 h-16 rounded-full bg-[#2E7D32]/10 text-[#2E7D32] flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-10 h-10" />
-            </div>
-            <h3 className="font-serif text-2xl font-bold text-[#241E1A]">
-              Order Received!
-            </h3>
-            <p className="mt-2 text-sm text-[#756B63] font-light leading-relaxed">
-              Your order has been sent to our barista for <span className="font-semibold text-[#241E1A]">Table {tableNumber}</span>. We will serve your freshly crafted coffee shortly.
-            </p>
-            <button
-              onClick={() => {
-                resetOrderPlaced();
-                if (isDrawer) setIsCartOpen(false);
-                setActiveTab('menu');
-              }}
-              className="mt-6 w-full py-3.5 bg-[#241E1A] text-white rounded-xl text-sm font-bold hover:bg-black transition-colors cursor-pointer"
-            >
-              Back to Café Menu
-            </button>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 };
