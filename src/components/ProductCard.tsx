@@ -1,26 +1,31 @@
 import React, { useState } from 'react';
 import type { MenuItem } from '../data/menuData';
 import { useCart } from '../context/CartContext';
-import { Plus, Check, SlidersHorizontal, Heart, MoreVertical } from 'lucide-react';
+import { Plus, Minus, SlidersHorizontal, Heart, MoreVertical } from 'lucide-react';
 
 interface ProductCardProps {
   item: MenuItem;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
-  const { addToCart, openProductDetail } = useCart();
-  const [addedAnimation, setAddedAnimation] = useState(false);
+  const { openProductDetail, getItemQuantity, incrementItem, decrementItem } = useCart();
   const [isFavorite, setIsFavorite] = useState(false);
+
+  const quantity = getItemQuantity(item.id);
 
   const handleAddClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (item.isCustomizable) {
-      openProductDetail(item);
-    } else {
-      addToCart(item, {});
-      setAddedAnimation(true);
-      setTimeout(() => setAddedAnimation(false), 1200);
-    }
+    incrementItem(item);
+  };
+
+  const handleIncrement = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    incrementItem(item);
+  };
+
+  const handleDecrement = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    decrementItem(item.id);
   };
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
@@ -34,12 +39,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
   };
 
   return (
-    <div className="group bg-white rounded-2xl border border-[#E5DCD1] overflow-hidden flex flex-col justify-between transition-all duration-300 hover:border-[#B86B3D]/40 hover:shadow-md cursor-pointer shadow-2xs sm:shadow-xs">
+    <div className="group bg-white rounded-2xl border border-[#E5DCD1] overflow-hidden flex flex-col justify-between transition-all duration-200 hover:border-[#B86B3D]/40 hover:shadow-md cursor-pointer shadow-2xs sm:shadow-xs">
       
-      {/* MOBILE CARD VIEW (Matches wireframe in Image 2) */}
+      {/* MOBILE CARD VIEW */}
       <div className="block sm:hidden" onClick={() => openProductDetail(item)}>
-        {/* Food Image Container with proper height constraint and aspect ratio */}
-        <div className="relative w-full h-44 sm:h-auto aspect-[16/10] overflow-hidden bg-[#F0E6D8]">
+        {/* Food Image Container */}
+        <div className="relative w-full aspect-[16/10] overflow-hidden bg-[#F0E6D8]">
           <img
             src={item.image}
             alt={item.name}
@@ -66,12 +71,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
             </div>
           )}
 
-          {/* Image Bottom-Right Overlay Controls (♡ Heart & ⋮ 3 Dots) */}
+          {/* Image Bottom-Right Overlay Controls */}
           <div className="absolute bottom-3 right-3 flex items-center gap-2 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full text-white">
             <button
               onClick={handleFavoriteClick}
               className="p-0.5 text-white/90 hover:text-white focus:outline-none transition-transform active:scale-125"
-              title={isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+              title={isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
             >
               <Heart
                 className={`w-4 h-4 transition-colors ${
@@ -91,55 +96,74 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
 
         {/* Card Content Area below Image */}
         <div className="p-4 flex flex-col justify-between">
-          {/* Top Row: Name on Left, Price on Right */}
           <div className="flex items-start justify-between gap-3">
             <h3 className="font-serif text-base font-bold text-[#241E1A] line-clamp-1 flex-1">
               {item.name}
             </h3>
-            <span className="text-base font-bold text-[#241E1A] shrink-0">
+            <span className="text-base font-bold text-[#241E1A] shrink-0 font-sans">
               ₹{item.price}
             </span>
           </div>
 
-          {/* Description */}
           <p className="mt-1 text-xs text-[#756B63] line-clamp-2 leading-relaxed font-light">
             {item.description}
           </p>
 
-          {/* Bottom Right Aligned [+ ADD] Button */}
-          <div className="mt-3 flex justify-end">
-            <button
-              onClick={handleAddClick}
-              className={`px-4 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 focus:outline-none cursor-pointer ${
-                addedAnimation
-                  ? 'bg-[#2E7D32] text-white scale-105'
-                  : 'bg-[#B86B3D] text-white hover:bg-[#A05A30] active:scale-95 shadow-2xs'
-              }`}
-            >
-              {addedAnimation ? (
-                <>
-                  <Check className="w-3.5 h-3.5" />
-                  <span>Added</span>
-                </>
-              ) : (
-                <>
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>ADD</span>
-                </>
-              )}
-            </button>
+          {/* Bottom Action Area: + ADD vs [- 1 +] */}
+          <div className="mt-3.5 flex items-center justify-between pt-1">
+            <span className="text-[11px] text-[#756B63] font-medium font-sans">
+              ₹{item.price}
+            </span>
+
+            {quantity > 0 ? (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center bg-[#241E1A] text-white rounded-xl overflow-hidden shadow-xs border border-[#B86B3D]/30"
+              >
+                <button
+                  type="button"
+                  onClick={handleDecrement}
+                  className="px-2.5 py-1.5 text-[#E7D8C7] hover:text-white hover:bg-white/10 active:scale-90 transition-all flex items-center justify-center cursor-pointer"
+                  title="Decrease count"
+                >
+                  <Minus className="w-3.5 h-3.5 stroke-[2.5]" />
+                </button>
+
+                <span className="px-2 text-xs font-bold text-white min-w-[20px] text-center select-none font-mono">
+                  {quantity}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={handleIncrement}
+                  className="px-2.5 py-1.5 text-[#E7D8C7] hover:text-white hover:bg-white/10 active:scale-90 transition-all flex items-center justify-center cursor-pointer"
+                  title="Increase count"
+                >
+                  <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleAddClick}
+                className="px-4 py-1.5 rounded-xl text-xs font-bold bg-[#B86B3D] text-white hover:bg-[#A05A30] active:scale-95 transition-all shadow-2xs flex items-center gap-1 cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Add</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
 
-      {/* DESKTOP CARD VIEW (100% Preserved & Unchanged) */}
+      {/* DESKTOP CARD VIEW */}
       <div className="hidden sm:flex flex-col justify-between h-full" onClick={() => openProductDetail(item)}>
         <div className="relative w-full aspect-[4/3] overflow-hidden bg-[#F0E6D8]">
           <img
             src={item.image}
             alt={item.name}
             loading="lazy"
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-104"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-104"
           />
 
           {item.isVegetarian ? (
@@ -173,31 +197,49 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
           <div className="mt-4 pt-3 border-t border-[#E5DCD1]/60 flex items-center justify-between">
             <div>
               <span className="text-xs text-[#756B63] font-medium uppercase tracking-wider block">Price</span>
-              <span className="text-lg font-semibold text-[#241E1A]">
+              <span className="text-lg font-semibold text-[#241E1A] font-sans">
                 ₹{item.price}
               </span>
             </div>
 
-            <button
-              onClick={handleAddClick}
-              className={`px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-1.5 transition-all duration-200 focus:outline-none cursor-pointer ${
-                addedAnimation
-                  ? 'bg-[#2E7D32] text-white scale-105'
-                  : 'bg-[#B86B3D] text-white hover:bg-[#A05A30] active:scale-95 shadow-2xs'
-              }`}
-            >
-              {addedAnimation ? (
-                <>
-                  <Check className="w-4 h-4" />
-                  <span>Added</span>
-                </>
-              ) : (
-                <>
-                  <Plus className="w-4 h-4" />
-                  <span>Add</span>
-                </>
-              )}
-            </button>
+            {/* Stepper pill [- 1 +] or [+ Add] */}
+            {quantity > 0 ? (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center bg-[#241E1A] text-white rounded-xl overflow-hidden shadow-xs border border-[#B86B3D]/30"
+              >
+                <button
+                  type="button"
+                  onClick={handleDecrement}
+                  className="px-3 py-2 text-[#E7D8C7] hover:text-white hover:bg-white/10 active:scale-90 transition-all flex items-center justify-center cursor-pointer"
+                  title="Decrease count"
+                >
+                  <Minus className="w-4 h-4 stroke-[2.5]" />
+                </button>
+
+                <span className="px-2.5 text-sm font-bold text-white min-w-[24px] text-center select-none font-mono">
+                  {quantity}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={handleIncrement}
+                  className="px-3 py-2 text-[#E7D8C7] hover:text-white hover:bg-white/10 active:scale-90 transition-all flex items-center justify-center cursor-pointer"
+                  title="Increase count"
+                >
+                  <Plus className="w-4 h-4 stroke-[2.5]" />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleAddClick}
+                className="px-4 py-2 rounded-xl text-sm font-bold bg-[#B86B3D] text-white hover:bg-[#A05A30] active:scale-95 transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+              >
+                <Plus className="w-4 h-4 stroke-[2.5]" />
+                <span>Add</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -205,4 +247,3 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
     </div>
   );
 };
-

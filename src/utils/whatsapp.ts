@@ -2,7 +2,7 @@ import { RESTAURANT_CONFIG } from '../config/restaurantConfig';
 import type { CartItem } from '../context/CartContext';
 
 export type OrderFulfillmentType = 'dine-in' | 'takeaway' | 'delivery';
-export type PaymentMethod = 'counter' | 'cash-on-delivery' | 'upi';
+export type PaymentMethod = 'counter' | 'cash-on-delivery';
 export type OrderStatus = 'placed' | 'confirmed' | 'preparing' | 'ready' | 'completed' | 'cancelled';
 
 export interface CustomerDetails {
@@ -78,9 +78,7 @@ export function formatOrderToWhatsAppText(order: PlacedOrder): string {
     .join('\n');
 
   const paymentText =
-    order.paymentMethod === 'upi'
-      ? '📲 UPI Online'
-      : order.fulfillmentType === 'delivery'
+    order.fulfillmentType === 'delivery'
       ? '💵 Cash on Delivery'
       : '💳 Pay at Counter';
 

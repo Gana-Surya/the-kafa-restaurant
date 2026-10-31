@@ -36,6 +36,9 @@ interface CartContextType {
   updateQuantity: (cartItemId: string, delta: number) => void;
   removeFromCart: (cartItemId: string) => void;
   clearCart: () => void;
+  getItemQuantity: (itemId: string) => number;
+  incrementItem: (item: MenuItem) => void;
+  decrementItem: (itemId: string) => void;
   totalItemsCount: number;
   subtotal: number;
   deliveryFee: number;
@@ -327,6 +330,42 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const clearCart = () => setCart([]);
 
+  // Instant O(1) quantity map
+  const itemQuantityMap = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const ci of cart) {
+      map.set(ci.item.id, (map.get(ci.item.id) || 0) + ci.quantity);
+    }
+    return map;
+  }, [cart]);
+
+  const getItemQuantity = (itemId: string): number => {
+    return itemQuantityMap.get(itemId) || 0;
+  };
+
+  const incrementItem = (item: MenuItem) => {
+    if (item.isCustomizable && (!itemQuantityMap.has(item.id) || itemQuantityMap.get(item.id) === 0)) {
+      openProductDetail(item);
+      return;
+    }
+
+    const existing = cart.find((ci) => ci.item.id === item.id);
+    if (existing) {
+      updateQuantity(existing.cartItemId, 1);
+    } else {
+      addToCart(item, {}, 1);
+    }
+  };
+
+  const decrementItem = (itemId: string) => {
+    for (let i = cart.length - 1; i >= 0; i--) {
+      if (cart[i].item.id === itemId) {
+        updateQuantity(cart[i].cartItemId, -1);
+        break;
+      }
+    }
+  };
+
   const totalItemsCount = useMemo(() => {
     return cart.reduce((acc, ci) => acc + ci.quantity, 0);
   }, [cart]);
@@ -429,6 +468,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateQuantity,
         removeFromCart,
         clearCart,
+        getItemQuantity,
+        incrementItem,
+        decrementItem,
         totalItemsCount,
         subtotal,
         deliveryFee,

@@ -9,7 +9,6 @@ import {
   Coffee,
   ShoppingBag,
   Bike,
-  QrCode,
   AlertCircle,
   Navigation
 } from 'lucide-react';
@@ -30,8 +29,6 @@ export const CheckoutModal: React.FC = () => {
     setCustomerDetails,
     specialInstructions,
     setSpecialInstructions,
-    paymentMethod,
-    setPaymentMethod,
     submitOrder,
     setActiveTab,
     setIsCartOpen
@@ -39,7 +36,6 @@ export const CheckoutModal: React.FC = () => {
 
   const [isLocating, setIsLocating] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [showUpiQr, setShowUpiQr] = useState(false);
 
   if (!isCheckoutOpen || cart.length === 0) return null;
 
@@ -349,64 +345,16 @@ export const CheckoutModal: React.FC = () => {
             />
           </div>
 
-          {/* Payment Method */}
-          <div className="bg-white p-4 rounded-2xl border border-[#E5DCD1] space-y-3 shadow-2xs">
+          {/* Payment Method Info (UPI removed as requested) */}
+          <div className="bg-white p-4 rounded-2xl border border-[#E5DCD1] space-y-1.5 shadow-2xs">
             <label className="block text-xs uppercase tracking-wider font-semibold text-[#756B63]">
-              Payment Preference
+              Payment Mode
             </label>
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                type="button"
-                onClick={() => {
-                  setPaymentMethod(fulfillmentType === 'delivery' ? 'cash-on-delivery' : 'counter');
-                  setShowUpiQr(false);
-                }}
-                className={`p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer text-left ${
-                  paymentMethod !== 'upi'
-                    ? 'border-[#B86B3D] bg-[#B86B3D]/5 text-[#B86B3D] font-bold'
-                    : 'border-[#E5DCD1] text-[#756B63] hover:bg-[#F7F3EC]'
-                }`}
-              >
-                {fulfillmentType === 'delivery' ? 'Cash on Delivery' : 'Pay at Counter'}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setPaymentMethod('upi');
-                  setShowUpiQr(true);
-                }}
-                className={`p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer flex items-center justify-between ${
-                  paymentMethod === 'upi'
-                    ? 'border-[#B86B3D] bg-[#B86B3D]/5 text-[#B86B3D] font-bold'
-                    : 'border-[#E5DCD1] text-[#756B63] hover:bg-[#F7F3EC]'
-                }`}
-              >
-                <span>Instant UPI</span>
-                <QrCode className="w-4 h-4 text-[#B86B3D]" />
-              </button>
+            <div className="text-xs font-semibold text-[#241E1A] bg-[#F7F3EC] p-3 rounded-xl border border-[#E5DCD1]">
+              {fulfillmentType === 'delivery'
+                ? '💵 Cash on Delivery (Pay when order arrives)'
+                : '💳 Pay at Counter (Card / Cash / UPI directly at café desk)'}
             </div>
-
-            {/* Instant UPI QR Code View */}
-            {paymentMethod === 'upi' && showUpiQr && (
-              <div className="pt-3 border-t border-[#E5DCD1]/60 text-center space-y-2">
-                <div className="inline-block p-2 bg-white rounded-2xl border border-[#E5DCD1] shadow-xs">
-                  <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${encodeURIComponent(
-                      RESTAURANT_CONFIG.upiId
-                    )}%26pn=${encodeURIComponent(RESTAURANT_CONFIG.name)}%26am=${grandTotal}%26cu=INR`}
-                    alt="UPI Payment QR Code"
-                    className="w-32 h-32 mx-auto rounded-lg"
-                  />
-                </div>
-                <p className="text-[11px] text-[#756B63]">
-                  Scan with GPay, PhonePe, or Paytm for <span className="font-bold text-[#241E1A]">₹{grandTotal}</span>
-                </p>
-                <div className="text-[10px] text-[#756B63] font-mono bg-[#F7F3EC] py-1 px-2 rounded-md inline-block">
-                  UPI ID: {RESTAURANT_CONFIG.upiId}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Pricing Breakdown */}

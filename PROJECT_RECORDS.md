@@ -76,6 +76,15 @@
   - Updated `src/components/Header.tsx`, `src/components/BottomNav.tsx`, `src/components/OrderSummary.tsx`, `src/components/ProfileView.tsx`, and `src/App.tsx`.
 - **2026-10-31 15:55:** Ran `npm run build` (`tsc -b && vite build`) and verified 100% clean production build.
 - **2026-10-31 16:02:** Successfully pushed commit `9ae45be` to `https://github.com/lunacoderj/the-kafa-restaurant.git` on branch `main`.
+- **2026-10-31 16:29:** Implemented UX optimizations and user requests:
+  - **Removed Instant UPI:** Removed UPI payment selector, UPI ID config, and QR code generator from checkout modal (`CheckoutModal.tsx`, `restaurantConfig.ts`, `whatsapp.ts`). Retained clear, direct payment methods: "Pay at Counter" (Dine-in / Takeaway) and "Cash on Delivery" (Delivery).
+  - **Added Top Header Cart Icon:** Added a prominent Cart button right beside the Contact/Call button in `Header.tsx` displaying the live `totalItemsCount` badge. Clicking it immediately opens the cart summary tray so users can check added items from anywhere.
+  - **Interactive Swiggy/Zomato Style Cart Stepper on Product Cards:** Upgraded `ProductCard.tsx` (mobile & desktop) so when an item is added, it displays `[ - ]  1  [ + ]`.
+    - Clicking `+` increments count (1 -> 2 -> 3).
+    - Clicking `-` decrements count (3 -> 2 -> 1 -> 0).
+    - When count reaches 0, it cleanly reverts back to showing `+ Add`.
+  - **Performance & Snappiness:** Added memoized O(1) quantity map in `CartContext.tsx` (`getItemQuantity`, `incrementItem`, `decrementItem`) executing synchronously with zero delay. Removed artificial setTimeout blockers in `ProductDetailModal.tsx` for instant UI response.
+  - **Build Verification:** Tested and passed full production build (`tsc -b && vite build`) with zero errors.
 
 ---
 

@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import type { SelectedCustomization } from '../context/CartContext';
-import { X, Plus, Minus, Check } from 'lucide-react';
+import { X, Plus, Minus } from 'lucide-react';
 
 export const ProductDetailModal: React.FC = () => {
   const { selectedProduct, closeProductDetail, addToCart } = useCart();
   const [customizations, setCustomizations] = useState<SelectedCustomization>({});
   const [quantity, setQuantity] = useState(1);
-  const [added, setAdded] = useState(false);
 
   useEffect(() => {
     if (selectedProduct && selectedProduct.customizationOptions) {
@@ -24,7 +23,6 @@ export const ProductDetailModal: React.FC = () => {
       setCustomizations({});
     }
     setQuantity(1);
-    setAdded(false);
   }, [selectedProduct]);
 
   useEffect(() => {
@@ -55,11 +53,7 @@ export const ProductDetailModal: React.FC = () => {
 
   const handleAddToCart = () => {
     addToCart(selectedProduct, customizations, quantity);
-    setAdded(true);
-    setTimeout(() => {
-      setAdded(false);
-      closeProductDetail();
-    }, 400);
+    closeProductDetail();
   };
 
   return (
@@ -168,18 +162,9 @@ export const ProductDetailModal: React.FC = () => {
 
           <button
             onClick={handleAddToCart}
-            className={`flex-1 py-3.5 px-4 rounded-xl text-sm font-bold text-white transition-all duration-200 shadow-sm flex items-center justify-center gap-2 cursor-pointer ${
-              added ? 'bg-[#2E7D32]' : 'bg-[#B86B3D] hover:bg-[#A05A30] active:scale-[0.98]'
-            }`}
+            className="flex-1 py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-[#B86B3D] hover:bg-[#A05A30] active:scale-[0.98] transition-all duration-150 shadow-sm flex items-center justify-center gap-2 cursor-pointer"
           >
-            {added ? (
-              <>
-                <Check className="w-4 h-4" />
-                <span>Added to Order</span>
-              </>
-            ) : (
-              <span>Add to order — ₹{totalPrice}</span>
-            )}
+            <span>Add to order — ₹{totalPrice}</span>
           </button>
         </div>
       </div>
