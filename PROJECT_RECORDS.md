@@ -85,6 +85,16 @@
     - When count reaches 0, it cleanly reverts back to showing `+ Add`.
   - **Performance & Snappiness:** Added memoized O(1) quantity map in `CartContext.tsx` (`getItemQuantity`, `incrementItem`, `decrementItem`) executing synchronously with zero delay. Removed artificial setTimeout blockers in `ProductDetailModal.tsx` for instant UI response.
   - **Build Verification:** Tested and passed full production build (`tsc -b && vite build`) with zero errors.
+- **2026-10-31 17:10:** Implemented Interactive Map Pin Picker for Customer Delivery Address:
+  - Installed `leaflet` and `@types/leaflet`.
+  - Created `src/components/MapPinPickerModal.tsx`:
+    - Full-screen / modal interactive map with center floating pin and shadow drop animation.
+    - One-tap "My GPS" locate button to automatically pan to customer's exact device coordinates (`navigator.geolocation`).
+    - Area/landmark live search bar powered by OpenStreetMap Nominatim search API.
+    - Automatic reverse geocoding on pin move/drag to extract human-readable address (building, road, neighborhood, city, pincode).
+    - "Confirm & Use This Location" button which auto-populates the customer's delivery address textarea and generates the Google Maps navigation pin URL (`https://www.google.com/maps?q=${lat},${lng}`).
+  - Updated `src/components/CheckoutModal.tsx` with "Drop Pin on Map" / "Repin on Map" buttons and "Exact Map Pin Confirmed" preview indicator.
+  - Verified clean production build (`npm run build`).
 
 ---
 
